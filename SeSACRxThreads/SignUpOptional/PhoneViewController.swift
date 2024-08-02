@@ -7,11 +7,14 @@
  
 import UIKit
 import SnapKit
+import RxSwift
+import RxCocoa
 
 class PhoneViewController: UIViewController {
    
     let phoneTextField = SignTextField(placeholderText: "연락처를 입력해주세요")
     let nextButton = PointButton(title: "다음")
+    let disposeBag = DisposeBag()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,15 +22,34 @@ class PhoneViewController: UIViewController {
         view.backgroundColor = Color.white
         
         configureLayout()
-        
-        nextButton.addTarget(self, action: #selector(nextButtonClicked), for: .touchUpInside)
+        bind()
     }
     
-    @objc func nextButtonClicked() {
-        navigationController?.pushViewController(NicknameViewController(), animated: true)
+    func bind() {
+        let initialText = Observable.just("010")
+        let numberValidation = phoneTextField.rx.text.orEmpty.map { $0.allSatisfy { $0.isNumber } }
+        let lengthValidation = phoneTextField.rx.text.orEmpty.map { $0.count >= 10 }
+        let allValidation = Observable.combineLatest(numberValidation, lengthValidation).map { $0 && $1 }.share(replay: 1)
+        
+        initialText.bind(to: phoneTextField.rx.text)
+            .disposed(by: disposeBag)
+        
+        allValidation
+            .bind(to: nextButton.rx.isEnabled)
+            .disposed(by: disposeBag)
+        
+        allValidation
+            .map { $0 ? Color.black : UIColor.lightGray }
+            .bind(to: nextButton.rx.backgroundColor)
+            .disposed(by: disposeBag)
+        
+        nextButton.rx.tap
+            .bind(with: self) { owner, _ in
+                owner.navigationController?.pushViewController(NicknameViewController(), animated: true)
+            }
+            .disposed(by: disposeBag)
     }
 
-    
     func configureLayout() {
         view.addSubview(phoneTextField)
         view.addSubview(nextButton)
