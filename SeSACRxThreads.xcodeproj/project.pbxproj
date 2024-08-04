@@ -33,6 +33,7 @@
 		04F6DC022C5B0D8200667F4D /* DetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04F6DC012C5B0D8200667F4D /* DetailViewController.swift */; };
 		CC81BA3D2C5E71FE009ACE8F /* ShoppingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC81BA3C2C5E71FE009ACE8F /* ShoppingViewController.swift */; };
 		CC81BA402C5E721B009ACE8F /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = CC81BA3F2C5E721B009ACE8F /* Then */; };
+		CC81BA422C5F4B39009ACE8F /* ProductViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC81BA412C5F4B39009ACE8F /* ProductViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +80,7 @@
 		04F6DBFF2C5B0C2200667F4D /* SearchTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTableViewCell.swift; sourceTree = "<group>"; };
 		04F6DC012C5B0D8200667F4D /* DetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailViewController.swift; sourceTree = "<group>"; };
 		CC81BA3C2C5E71FE009ACE8F /* ShoppingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingViewController.swift; sourceTree = "<group>"; };
+		CC81BA412C5F4B39009ACE8F /* ProductViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -218,6 +220,7 @@
 			isa = PBXGroup;
 			children = (
 				CC81BA3C2C5E71FE009ACE8F /* ShoppingViewController.swift */,
+				CC81BA412C5F4B39009ACE8F /* ProductViewController.swift */,
 			);
 			path = Shopping;
 			sourceTree = "<group>";
@@ -369,6 +372,7 @@
 				0412806C2AEFABFE00972552 /* PasswordViewController.swift in Sources */,
 				041280562AEFA04800972552 /* SignInViewController.swift in Sources */,
 				041280282AEF9BAB00972552 /* ViewController.swift in Sources */,
+				CC81BA422C5F4B39009ACE8F /* ProductViewController.swift in Sources */,
 				CC81BA3D2C5E71FE009ACE8F /* ShoppingViewController.swift in Sources */,
 				041280632AEFA0CE00972552 /* PointButton.swift in Sources */,
 				04F6DC022C5B0D8200667F4D /* DetailViewController.swift in Sources */,
