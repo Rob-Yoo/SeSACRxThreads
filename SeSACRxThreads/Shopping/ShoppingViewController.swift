@@ -87,6 +87,15 @@ final class ShoppingViewController: UIViewController {
             }
             .disposed(by: disposeBag)
         
+        tableView.rx.itemDeleted
+            .bind(with: self) { owner, indexPath in
+                var list = owner.list.value
+                
+                list.remove(at: indexPath.row)
+                owner.list.accept(list)
+            }
+            .disposed(by: disposeBag)
+        
         Observable.zip(tableView.rx.modelSelected(Product.self), tableView.rx.itemSelected)
             .bind(with: self) { owner, value in
                 let nextVC = ProductViewController(product: value.0)
@@ -103,6 +112,7 @@ final class ShoppingViewController: UIViewController {
                 
                 list.append(Product(title: text, isCompleted: false, isStar: false))
                 owner.list.accept(list)
+                owner.addView.addTextField.text = ""
             }
             .disposed(by: disposeBag)
     }
