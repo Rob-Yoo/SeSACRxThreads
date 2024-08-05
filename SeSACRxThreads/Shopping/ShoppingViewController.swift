@@ -11,20 +11,8 @@ import Then
 import RxSwift
 import RxCocoa
 
-struct Product {
-    let title: String
-    var isCompleted: Bool
-    var isStar: Bool
-}
-
 final class ShoppingViewController: UIViewController {
-    
-    private var list = BehaviorRelay(value: [
-        Product(title: "그립톡 구매하기", isCompleted: .random(), isStar: .random()),
-        Product(title: "사이다 구매", isCompleted: .random(), isStar: .random()),
-        Product(title: "아이패드 최저가 알아보기", isCompleted: .random(), isStar: .random()),
-        Product(title: "양말", isCompleted: .random(), isStar: .random())
-    ])
+    private let viewModel = ShoppingViewModel()
     private let disposeBag = DisposeBag()
     
     private let addView = AddView()
@@ -63,57 +51,40 @@ final class ShoppingViewController: UIViewController {
     }
     
     func bind() {
-        list
+        let completedProduct = PublishRelay<Int>()
+        let starredProduct = PublishRelay<Int>()
+        let input = ShoppingViewModel.Input(addButtonTapped: addView.addButton.rx.tap, addProductTitle: addView.addTextField.rx.text.orEmpty, tableViewItemSelected: tableView.rx.itemSelected, tableViewModelSelected: tableView.rx.modelSelected(Product.self), itemDeleted: tableView.rx.itemDeleted, completedProduct: completedProduct, starredProduct: starredProduct)
+        let output = viewModel.tranform(input: input)
+        
+        output.shoppingList
             .bind(to: tableView.rx.items(cellIdentifier: ProductTableViewCell.reuseIdentifier, cellType: ProductTableViewCell.self)) { row, element, cell in
                 cell.configureCell(product: element)
                 
                 cell.completeButton.rx.tap
-                    .bind(with: self) { owner, _ in
-                        var list = owner.list.value
-                        
-                        list[row].isCompleted.toggle()
-                        owner.list.accept(list)
-                    }
+                    .map { row }
+                    .bind(to: completedProduct)
                     .disposed(by: cell.disposeBag)
                 
                 cell.starButton.rx.tap
-                    .bind(with: self) { owner, _ in
-                        var list = owner.list.value
-
-                        list[row].isStar.toggle()
-                        owner.list.accept(list)
-                    }
+                    .map { row }
+                    .bind(to: starredProduct)
                     .disposed(by: cell.disposeBag)
             }
             .disposed(by: disposeBag)
-        
-        tableView.rx.itemDeleted
-            .bind(with: self) { owner, indexPath in
-                var list = owner.list.value
-                
-                list.remove(at: indexPath.row)
-                owner.list.accept(list)
-            }
-            .disposed(by: disposeBag)
-        
-        Observable.zip(tableView.rx.modelSelected(Product.self), tableView.rx.itemSelected)
+
+        output.cellSelected
             .bind(with: self) { owner, value in
-                let nextVC = ProductViewController(product: value.0)
+                let nextVC = ProductViewController(product: value.1)
                 
                 owner.navigationController?.pushViewController(nextVC, animated: true)
-                owner.tableView.deselectRow(at: value.1, animated: true)
+                owner.tableView.deselectRow(at: value.0, animated: true)
             }
             .disposed(by: disposeBag)
         
-        addView.addButton.rx.tap
-            .withLatestFrom(addView.addTextField.rx.text.orEmpty)
-            .bind(with: self) { owner, text in
-                var list = owner.list.value
-                
-                list.append(Product(title: text, isCompleted: false, isStar: false))
-                owner.list.accept(list)
-                owner.addView.addTextField.text = ""
-            }
+
+        output.addButtonTapped
+            .map { "" }
+            .bind(to: addView.addTextField.rx.text)
             .disposed(by: disposeBag)
     }
 }

@@ -37,6 +37,8 @@
 		CCF3083F2C60AAD100B610C2 /* PasswordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF3083E2C60AAD100B610C2 /* PasswordViewModel.swift */; };
 		CCF308412C60C9E100B610C2 /* PhoneViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF308402C60C9E100B610C2 /* PhoneViewModel.swift */; };
 		CCF308432C60E28800B610C2 /* BirthdayViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF308422C60E28800B610C2 /* BirthdayViewModel.swift */; };
+		CCF308452C60E82800B610C2 /* ShoppingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF308442C60E82800B610C2 /* ShoppingViewModel.swift */; };
+		CCF308472C61074100B610C2 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCF308462C61074100B610C2 /* Product.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -87,6 +89,8 @@
 		CCF3083E2C60AAD100B610C2 /* PasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordViewModel.swift; sourceTree = "<group>"; };
 		CCF308402C60C9E100B610C2 /* PhoneViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhoneViewModel.swift; sourceTree = "<group>"; };
 		CCF308422C60E28800B610C2 /* BirthdayViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BirthdayViewModel.swift; sourceTree = "<group>"; };
+		CCF308442C60E82800B610C2 /* ShoppingViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShoppingViewModel.swift; sourceTree = "<group>"; };
+		CCF308462C61074100B610C2 /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,6 +234,8 @@
 			children = (
 				CC81BA3C2C5E71FE009ACE8F /* ShoppingViewController.swift */,
 				CC81BA412C5F4B39009ACE8F /* ProductViewController.swift */,
+				CCF308442C60E82800B610C2 /* ShoppingViewModel.swift */,
+				CCF308462C61074100B610C2 /* Product.swift */,
 			);
 			path = Shopping;
 			sourceTree = "<group>";
@@ -383,9 +389,11 @@
 				041280282AEF9BAB00972552 /* ViewController.swift in Sources */,
 				CC81BA422C5F4B39009ACE8F /* ProductViewController.swift in Sources */,
 				CC81BA3D2C5E71FE009ACE8F /* ShoppingViewController.swift in Sources */,
+				CCF308452C60E82800B610C2 /* ShoppingViewModel.swift in Sources */,
 				041280632AEFA0CE00972552 /* PointButton.swift in Sources */,
 				04F6DC022C5B0D8200667F4D /* DetailViewController.swift in Sources */,
 				041280242AEF9BAB00972552 /* AppDelegate.swift in Sources */,
+				CCF308472C61074100B610C2 /* Product.swift in Sources */,
 				04F6DBFE2C5B0C0300667F4D /* SearchViewController.swift in Sources */,
 				CCF308432C60E28800B610C2 /* BirthdayViewModel.swift in Sources */,
 				04F6DC002C5B0C2200667F4D /* SearchTableViewCell.swift in Sources */,
