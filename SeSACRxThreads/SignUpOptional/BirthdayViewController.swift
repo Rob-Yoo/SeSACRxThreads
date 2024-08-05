@@ -12,6 +12,8 @@ import RxCocoa
 
 class BirthdayViewController: UIViewController {
     
+    private let viewModel = BirthdayViewModel()
+    
     let birthDayPicker: UIDatePicker = {
         let picker = UIDatePicker()
         picker.datePickerMode = .date
@@ -78,53 +80,45 @@ class BirthdayViewController: UIViewController {
     }
     
     func bind() {
-        let current = Calendar.current.dateComponents([.year, .month, .day], from: .now)
-        let year = BehaviorRelay(value: current.year!)
-        let month = BehaviorRelay(value: current.month!)
-        let day = BehaviorRelay(value: current.day!)
-        let age = BehaviorRelay(value: 0)
+        let input = BirthdayViewModel.Input(birthday: birthDayPicker.rx.date, nextButton: nextButton.rx.tap)
+        let output = viewModel.transform(input: input)
         
-        birthDayPicker.rx.date
-            .bind(with: self) { owner, date in
-                let dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: date)
-                
-                age.accept(current.year! - dateComponents.year!)
-                year.accept(dateComponents.year!)
-                month.accept(dateComponents.month!)
-                day.accept(dateComponents.day!)
-            }
-            .disposed(by: disposeBag)
-        
-        age.map { $0 >= 17 }
-            .bind(with: self) { owner, value in
+        output.ageValid
+            .drive(with: self) { owner, value in
                 let infoText = value ? "가입 가능한 나이입니다." : "만 17세 이상만 가입 가능합니다."
                 let infoColor: UIColor = value ? .blue : .red
-                let buttonColor: UIColor = value ? .black : .lightGray
                 
                 owner.infoLabel.text = infoText
                 owner.infoLabel.textColor = infoColor
+            }
+            .disposed(by: disposeBag)
+        
+        output.ageValid
+            .drive(with: self) { owner, value in
+                let buttonColor: UIColor = value ? .black : .lightGray
+                
                 owner.nextButton.backgroundColor = buttonColor
                 owner.nextButton.isEnabled = value
             }
             .disposed(by: disposeBag)
         
-        year
+        output.year
             .map { String($0) + "년" }
             .bind(to: yearLabel.rx.text)
             .disposed(by: disposeBag)
         
-        month
+        output.month
             .map { String($0) + "월" }
             .bind(to: monthLabel.rx.text)
             .disposed(by: disposeBag)
         
-        day
+        output.day
             .map { String($0) + "일" }
             .bind(to: dayLabel.rx.text)
             .disposed(by: disposeBag)
         
         
-        nextButton.rx.tap
+        output.nextButton
             .bind(with: self) { owner, _ in
                 owner.navigationController?.pushViewController(SearchViewController(), animated: true)
             }

@@ -15,7 +15,8 @@ class PhoneViewController: UIViewController {
     let phoneTextField = SignTextField(placeholderText: "연락처를 입력해주세요")
     let nextButton = PointButton(title: "다음")
     let disposeBag = DisposeBag()
-    
+    let viewModel = PhoneViewModel()
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -26,24 +27,22 @@ class PhoneViewController: UIViewController {
     }
     
     func bind() {
-        let initialText = Observable.just("010")
-        let numberValidation = phoneTextField.rx.text.orEmpty.map { $0.allSatisfy { $0.isNumber } }
-        let lengthValidation = phoneTextField.rx.text.orEmpty.map { $0.count >= 10 }
-        let allValidation = Observable.combineLatest(numberValidation, lengthValidation).map { $0 && $1 }.share(replay: 1)
+        let input = PhoneViewModel.Intput(phoneNumber: phoneTextField.rx.text.orEmpty, nextButtonTapped: nextButton.rx.tap)
+        let output = viewModel.transform(input: input)
         
-        initialText.bind(to: phoneTextField.rx.text)
+        output.initialText.bind(to: phoneTextField.rx.text)
             .disposed(by: disposeBag)
         
-        allValidation
-            .bind(to: nextButton.rx.isEnabled)
+        output.allValidation
+            .drive(nextButton.rx.isEnabled)
             .disposed(by: disposeBag)
         
-        allValidation
+        output.allValidation
             .map { $0 ? Color.black : UIColor.lightGray }
-            .bind(to: nextButton.rx.backgroundColor)
+            .drive(nextButton.rx.backgroundColor)
             .disposed(by: disposeBag)
         
-        nextButton.rx.tap
+        output.nextButtonTapped
             .bind(with: self) { owner, _ in
                 owner.navigationController?.pushViewController(NicknameViewController(), animated: true)
             }
