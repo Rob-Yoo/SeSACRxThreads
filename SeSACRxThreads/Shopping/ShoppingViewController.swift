@@ -15,6 +15,9 @@ final class ShoppingViewController: UIViewController {
     private let viewModel = ShoppingViewModel()
     private let disposeBag = DisposeBag()
     
+    private lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout()).then {
+        $0.register(RecommendCollectionViewCell.self, forCellWithReuseIdentifier: RecommendCollectionViewCell.identifier)
+    }
     private let addView = AddView()
     private let tableView = UITableView().then {
         $0.separatorStyle = .none
@@ -31,8 +34,17 @@ final class ShoppingViewController: UIViewController {
         bind()
     }
     
+    private func createLayout() -> UICollectionViewLayout {
+        let layout = UICollectionViewFlowLayout()
+        
+        layout.itemSize = CGSize(width: 100, height: 40)
+        layout.scrollDirection = .horizontal
+        return layout
+    }
+    
     private func configureHierarchy() {
         self.view.addSubview(addView)
+        self.view.addSubview(collectionView)
         self.view.addSubview(tableView)
     }
     
@@ -43,8 +55,14 @@ final class ShoppingViewController: UIViewController {
             make.height.equalTo(70)
         }
         
+        collectionView.snp.makeConstraints { make in
+            make.top.equalTo(addView.snp.bottom).offset(30)
+            make.horizontalEdges.equalToSuperview().inset(20)
+            make.height.equalTo(50)
+        }
+        
         tableView.snp.makeConstraints { make in
-            make.top.equalTo(addView.snp.bottom).offset(20)
+            make.top.equalTo(collectionView.snp.bottom).offset(30)
             make.horizontalEdges.equalToSuperview().inset(20)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
         }
@@ -53,7 +71,8 @@ final class ShoppingViewController: UIViewController {
     func bind() {
         let completedProduct = PublishRelay<Int>()
         let starredProduct = PublishRelay<Int>()
-        let input = ShoppingViewModel.Input(addButtonTapped: addView.addButton.rx.tap, addProductTitle: addView.addTextField.rx.text.orEmpty, tableViewItemSelected: tableView.rx.itemSelected, tableViewModelSelected: tableView.rx.modelSelected(Product.self), itemDeleted: tableView.rx.itemDeleted, completedProduct: completedProduct, starredProduct: starredProduct)
+        let recommendButtonTapped = PublishRelay<String>()
+        let input = ShoppingViewModel.Input(addButtonTapped: addView.addButton.rx.tap, addProductTitle: addView.addTextField.rx.text.orEmpty, tableViewItemSelected: tableView.rx.itemSelected, tableViewModelSelected: tableView.rx.modelSelected(Product.self), itemDeleted: tableView.rx.itemDeleted, completedProduct: completedProduct, starredProduct: starredProduct, recommendButtonTapped: recommendButtonTapped)
         let output = viewModel.tranform(input: input)
         
         output.shoppingList
@@ -68,6 +87,17 @@ final class ShoppingViewController: UIViewController {
                 cell.starButton.rx.tap
                     .map { row }
                     .bind(to: starredProduct)
+                    .disposed(by: cell.disposeBag)
+            }
+            .disposed(by: disposeBag)
+        
+        output.recommentList
+            .bind(to: collectionView.rx.items(cellIdentifier: RecommendCollectionViewCell.identifier, cellType: RecommendCollectionViewCell.self)) { item, element, cell in
+                cell.recentButton.setTitle(element, for: .normal)
+                
+                cell.recentButton.rx.tap
+                    .map { element }
+                    .bind(to: recommendButtonTapped)
                     .disposed(by: cell.disposeBag)
             }
             .disposed(by: disposeBag)

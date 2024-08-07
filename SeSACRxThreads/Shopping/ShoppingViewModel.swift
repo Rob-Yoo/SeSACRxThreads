@@ -18,10 +18,12 @@ final class ShoppingViewModel {
         let itemDeleted: ControlEvent<IndexPath>
         let completedProduct: PublishRelay<Int>
         let starredProduct: PublishRelay<Int>
+        let recommendButtonTapped: PublishRelay<String>
     }
     
     struct Output {
         let shoppingList: BehaviorRelay<[Product]>
+        let recommentList: BehaviorRelay<[String]>
         let cellSelected: Observable<(ControlEvent<IndexPath>.Element, ControlEvent<Product>.Element)>
         let addButtonTapped: ControlEvent<Void>
     }
@@ -33,6 +35,10 @@ final class ShoppingViewModel {
         Product(title: "양말", isCompleted: .random(), isStar: .random())
     ])
     
+    private let recommendList = BehaviorRelay(value: [
+        "키보드", "컵", "손풍기", "선풍기", "집", "아이패드", "아이폰", "모니터", "마우스"
+    ])
+    
     private let disposeBag = DisposeBag()
     
     func tranform(input: Input) -> Output {
@@ -41,10 +47,7 @@ final class ShoppingViewModel {
         
         newProduct
             .bind(with: self) { owner, title in
-                var list = owner.list.value
-
-                list.append(Product(title: title, isCompleted: false, isStar: false))
-                owner.list.accept(list)
+                owner.addList(title: title)
             }
             .disposed(by: disposeBag)
         
@@ -75,6 +78,19 @@ final class ShoppingViewModel {
             }
             .disposed(by: disposeBag)
         
-        return Output(shoppingList: list, cellSelected: cellSelected, addButtonTapped: input.addButtonTapped)
+        input.recommendButtonTapped
+            .bind(with: self) { owner, title in
+                owner.addList(title: title)
+            }
+            .disposed(by: disposeBag)
+        
+        return Output(shoppingList: list, recommentList: recommendList, cellSelected: cellSelected, addButtonTapped: input.addButtonTapped)
+    }
+    
+    private func addList(title: String) {
+        var list = self.list.value
+
+        list.append(Product(title: title, isCompleted: false, isStar: false))
+        self.list.accept(list)
     }
 }
